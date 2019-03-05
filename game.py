@@ -3,49 +3,71 @@ from pygame.locals import *
 
 # Set up pygame
 pygame.init()
-mainClock = pygame.time.Clock()
+main_clock = pygame.time.Clock()
 
 # Set up the window 
-WINDOWWIDTH = 600
-WINDOWHEIGHT = 600
+WINDOWWIDTH = 700
+WINDOWHEIGHT = 700
 #windowSurface = pygame.display.set_mode((WINDOWHEIGHT, WINDOWWIDTH), 0, 32)
 WINDOWFLAGS = pygame.DOUBLEBUF | pygame.HWSURFACE 
-windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), WINDOWFLAGS) 
+window_surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), WINDOWFLAGS) 
 pygame.display.set_caption('Mycophobia')
 
 # Some colors TODO: delete later
 WHITE = (255, 255, 255)
 GREY = (125, 125, 125)
 BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+
+# Set up the world
+WORLDBOTTOM = WINDOWHEIGHT * 0.85
+score = 0
 
 # Set up the player
 PLAYERSPEED = 10
 PLAYERWIDTH = 25
 PLAYERHEIGHT = 50
-player = pygame.Rect(400, WINDOWHEIGHT * 0.75, PLAYERWIDTH, PLAYERHEIGHT) # TODO: replace 400 here with the actuall value
+player = pygame.Rect(400, WORLDBOTTOM - PLAYERHEIGHT, PLAYERWIDTH, PLAYERHEIGHT) # TODO: replace 400 here with the actuall value
 
 # Set up the bullets
-BULLETSPEED = 30
+BULLETSPEED = 20
 BULLETWIDTH = 10
 BULLETHEIGHT = 20
 bullets = []
 
+# Set up the enemy
+ENEMYSPEED = 2
+ENEMYSIZE = 50
+enemy_counter = 0
+enemies = []
+
 # Run the game loop
 while True:
-	# Check for the quit event
-	for event in pygame.event.get():
-		if event.type == QUIT:
-			pygame.quit()
-			sys.exit()
-		if event.type == KEYDOWN:
-			if event.key == K_UP:
-				bullets.append(pygame.Rect(player.left + (PLAYERWIDTH - BULLETWIDTH) / 2,
-					player.top - BULLETHEIGHT,
-					BULLETWIDTH, BULLETHEIGHT))
-		if event.type == KEYUP:
-			if event.key == K_ESCAPE:
-				pygame.quit()
-				sys.exit()
+	# Move the bullets
+	for bullet in bullets[:]:
+		bullet.top -= BULLETSPEED
+		# Check if he is out of the frame
+		if bullet.bottom < 0:
+			bullets.remove(bullet)	
+
+	# Move the enemies
+	for enemy in enemies[:]:
+		enemy.top += ENEMYSPEED
+
+	# Check if a bulltet colides with an enemy
+	for enemy in enemies[:]:
+		for bullet in bullets[:]:
+			if bullet.colliderect(enemy):
+				bullets.remove(bullet)
+				enemies.remove(enemy)
+				score += 1
+
+	# Spawn enemies
+	enemy_counter += 1
+	if enemy_counter > 40:
+		enemy_counter = 0
+		enemies.append(pygame.Rect(random.randint(0, WINDOWWIDTH - ENEMYSIZE), -ENEMYSIZE, ENEMYSIZE, ENEMYSIZE))
 
 	# Move the player
 	keys = pygame.key.get_pressed()
@@ -58,26 +80,48 @@ while True:
 		if player.right > WINDOWWIDTH:
 			player.right = WINDOWWIDTH
 
-	# Draw the white background onto the surface
-	windowSurface.fill(WHITE)
+	# Check for the quit event
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			pygame.quit()
+			sys.exit()
+		if event.type == KEYDOWN:
+			if event.key == K_SPACE or event.key == K_RETURN:
+				bullets.append(pygame.Rect(player.left + (PLAYERWIDTH - BULLETWIDTH) / 2,
+					player.top - BULLETHEIGHT,
+					BULLETWIDTH, BULLETHEIGHT))
+		if event.type == KEYUP:
+			if event.key == K_ESCAPE:
+				pygame.quit()
+				sys.exit()
 
-	# Draw the player
-	pygame.draw.rect(windowSurface, BLUE, player)
+	# Draw the white background onto the surface
+	window_surface.fill(WHITE)
+
+	# Draw a line at the worldbottom
+	line = pygame.Rect(0, WORLDBOTTOM, WINDOWWIDTH, 1)
+	pygame.draw.rect(window_surface, BLACK, line)
+
+	# Draw the enemies
+	for enemy in enemies:
+		pygame.draw.rect(window_surface, RED, enemy)
 
 	# Draw the bullets
 	for bullet in bullets:
-		pygame.draw.rect(windowSurface, GREY, bullet)
+		pygame.draw.rect(window_surface, GREY, bullet)
 
-	# Move the bullets
-	for bullet in bullets:
-		bullet.top -= BULLETSPEED
-		# Check if he is out of the frame
-		if bullet.bottom < 0:
-			bullets.remove(bullet)
+	# Draw the player
+	pygame.draw.rect(window_surface, BLUE, player)
+
+	# Check for gameover
+	for enemy in enemies:
+		if enemy.bottom > WORLDBOTTOM:
+			# TODO: Display a proper gameover screen
+			print("\nGAMEOVER\nsry bro\n\nbut hey you got ", score, " mushrooms")
+			pygame.quit
+			sys.exit()
 
 	# Draw the window to the screen
-	print ("fps:", mainClock.get_fps())
+	#print ("fps:", mainClock.get_fps())
 	pygame.display.update()
-	mainClock.tick(60)
-
-
+	main_clock.tick(60)
