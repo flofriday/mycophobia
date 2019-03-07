@@ -38,6 +38,8 @@ BULLETSPEED = 20
 BULLETWIDTH = 10
 BULLETHEIGHT = 20
 bullets = []
+bullet_image = pygame.image.load('bullet.png')
+bullet_image = pygame.transform.scale(bullet_image, (BULLETWIDTH, BULLETHEIGHT))
 
 # Set up the enemy
 ENEMYSPEED = 2
@@ -102,8 +104,8 @@ while True:
 	window_surface.blit(world_image, (0, 0))
 
 	# Draw a line at the worldbottom
-	line = pygame.Rect(0, WORLDBOTTOM, WINDOWWIDTH, 1)
-	pygame.draw.rect(window_surface, BLACK, line)
+	#line = pygame.Rect(0, WORLDBOTTOM, WINDOWWIDTH, 1)
+	#pygame.draw.rect(window_surface, BLACK, line)
 
 	# Draw the enemies
 	for enemy in enemies:
@@ -111,7 +113,7 @@ while True:
 
 	# Draw the bullets
 	for bullet in bullets:
-		pygame.draw.rect(window_surface, GREY, bullet)
+		window_surface.blit(bullet_image, bullet)
 
 	# Draw the player
 	pygame.draw.rect(window_surface, BLUE, player)
