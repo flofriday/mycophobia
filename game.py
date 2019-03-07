@@ -21,7 +21,9 @@ RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 
 # Set up the world
-WORLDBOTTOM = WINDOWHEIGHT * 0.85
+world_image = pygame.image.load('background.png')
+world_image = pygame.transform.scale(world_image, (WINDOWWIDTH, WINDOWHEIGHT))
+WORLDBOTTOM = WINDOWHEIGHT * 0.70
 score = 0
 
 # Set up the player
@@ -96,7 +98,7 @@ while True:
 				sys.exit()
 
 	# Draw the white background onto the surface
-	window_surface.fill(WHITE)
+	window_surface.blit(world_image, (0, 0))
 
 	# Draw a line at the worldbottom
 	line = pygame.Rect(0, WORLDBOTTOM, WINDOWWIDTH, 1)
