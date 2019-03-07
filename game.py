@@ -24,7 +24,8 @@ BLACK = (0, 0, 0)
 world_image = pygame.image.load('background.png')
 world_image = pygame.transform.scale(world_image, (WINDOWWIDTH, WINDOWHEIGHT))
 WORLDBOTTOM = WINDOWHEIGHT * 0.70
-score = 0
+score = 0	
+font = pygame.font.SysFont(None, 32)
 
 # Set up the player
 PLAYERSPEED = 10
@@ -114,6 +115,13 @@ while True:
 
 	# Draw the player
 	pygame.draw.rect(window_surface, BLUE, player)
+
+	# Draw the score
+	text_offset = 10
+	text = font.render('Score: ' + str(score), 1, BLACK)
+	text_rect = text.get_rect()
+	text_rect.topleft = (WINDOWWIDTH - text_rect.width - text_offset, text_offset)
+	window_surface.blit(text, text_rect)
 
 	# Check for gameover
 	for enemy in enemies:
