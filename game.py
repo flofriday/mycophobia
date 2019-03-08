@@ -8,7 +8,6 @@ main_clock = pygame.time.Clock()
 # Set up the window 
 WINDOWWIDTH = 700
 WINDOWHEIGHT = 700
-#windowSurface = pygame.display.set_mode((WINDOWHEIGHT, WINDOWWIDTH), 0, 32)
 WINDOWFLAGS = pygame.DOUBLEBUF | pygame.HWSURFACE 
 window_surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), WINDOWFLAGS) 
 pygame.display.set_caption('Mycophobia')
@@ -44,6 +43,7 @@ bullet_image = pygame.transform.scale(bullet_image, (BULLETWIDTH, BULLETHEIGHT))
 # Set up the enemy
 ENEMYSPEED = 2
 ENEMYSIZE = 50
+ENEMYNUMBER = 70
 enemy_counter = 0
 enemies = []
 
@@ -70,7 +70,7 @@ while True:
 
 	# Spawn enemies
 	enemy_counter += 1
-	if enemy_counter > 40:
+	if enemy_counter > ENEMYNUMBER:
 		enemy_counter = 0
 		enemies.append(pygame.Rect(random.randint(0, WINDOWWIDTH - ENEMYSIZE), -ENEMYSIZE, ENEMYSIZE, ENEMYSIZE))
 
