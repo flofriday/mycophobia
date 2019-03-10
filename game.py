@@ -43,9 +43,73 @@ bullet_image = pygame.transform.scale(bullet_image, (BULLETWIDTH, BULLETHEIGHT))
 # Set up the enemy
 ENEMYSPEED = 2
 ENEMYSIZE = 50
-ENEMYNUMBER = 70
+ENEMYNUMBER = 60
 enemy_counter = 0
 enemies = []
+
+def terminate():
+	pygame.quit()
+	sys.exit()
+
+def wait_for_key_press(keys):
+	while True:
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				terminate()
+			if event.type == KEYDOWN:
+				if event.key == K_q:
+					terminate
+				if event.key in keys:
+					return
+		main_clock.tick(60)
+
+
+def draw_center_text(text, font, surface, y):
+	textobj = font.render(text, 1, BLACK)
+	textrect = textobj.get_rect()
+	textrect.midtop = (WINDOWWIDTH / 2, y)
+	surface.blit(textobj, textrect)
+
+def pause_game():
+	big_font = pygame.font.SysFont(None, 150)
+	draw_center_text('PAUSE', big_font, window_surface, WINDOWHEIGHT/6)
+	draw_center_text('Press SPACE to continue ...', font, window_surface, WINDOWHEIGHT/6 + 130)
+	pygame.display.update()
+	wait_for_key_press([K_SPACE, K_ESCAPE])
+
+def gameover():
+	# Use global vars 
+	global score
+	global bullets
+	global enemies
+	global player
+
+	# Print the text and cry
+	big_font = pygame.font.SysFont(None, 150)
+	draw_center_text('GAMEOVER', big_font, window_surface, WINDOWHEIGHT/6)
+	draw_center_text('But hey you got ' + str(score) + '.', font, window_surface, WINDOWHEIGHT/6 + 130)
+	draw_center_text('Press ENTER to play again ...', font, window_surface, WINDOWHEIGHT/6 + 130 + 40)
+	pygame.display.update()
+	wait_for_key_press([K_RETURN])	
+
+	# Reset the game
+	score = 0
+	bullets = []
+	enemies = []
+	player.x = 400 # TODO: don't hardcode this
+
+# Display the name and the controls
+window_surface.blit(world_image, (0, 0))
+big_font = pygame.font.SysFont(None, 120)
+draw_center_text('MYCOPHOBIA', big_font, window_surface, 40)
+draw_center_text('arrow keys -> move the player', font, window_surface, 40 + 120)
+draw_center_text('space -> shoot', font, window_surface, 40 + 120 + 40)
+draw_center_text('escape -> pause game', font, window_surface, 40 + 120 + 40*2)
+draw_center_text('q -> quit game', font, window_surface, 40 + 120 + 40*3)
+draw_center_text('Press ENTER to play ...', font, window_surface, 40 + 120 + 40*4)
+pygame.display.update()
+wait_for_key_press([K_RETURN])
+
 
 # Run the game loop
 while True:
@@ -88,24 +152,19 @@ while True:
 	# Check for the quit event
 	for event in pygame.event.get():
 		if event.type == QUIT:
-			pygame.quit()
-			sys.exit()
+			terminate()
 		if event.type == KEYDOWN:
-			if event.key == K_SPACE or event.key == K_RETURN:
+			if event.key == K_SPACE:
 				bullets.append(pygame.Rect(player.left + (PLAYERWIDTH - BULLETWIDTH) / 2,
 					player.top - BULLETHEIGHT,
 					BULLETWIDTH, BULLETHEIGHT))
-		if event.type == KEYUP:
 			if event.key == K_ESCAPE:
-				pygame.quit()
-				sys.exit()
+				pause_game()
+			if event.key == K_q:
+				terminate()
 
 	# Draw the white background onto the surface
 	window_surface.blit(world_image, (0, 0))
-
-	# Draw a line at the worldbottom
-	#line = pygame.Rect(0, WORLDBOTTOM, WINDOWWIDTH, 1)
-	#pygame.draw.rect(window_surface, BLACK, line)
 
 	# Draw the enemies
 	for enemy in enemies:
@@ -128,10 +187,7 @@ while True:
 	# Check for gameover
 	for enemy in enemies:
 		if enemy.bottom > WORLDBOTTOM:
-			# TODO: Display a proper gameover screen
-			print("\nGAMEOVER\nsry bro\n\nbut hey you got ", score, " mushrooms")
-			pygame.quit
-			sys.exit()
+			gameover()
 
 	# Draw the window to the screen
 	#print ("fps:", mainClock.get_fps())
