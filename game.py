@@ -42,10 +42,12 @@ bullet_image = pygame.transform.scale(bullet_image, (BULLETWIDTH, BULLETHEIGHT))
 
 # Set up the enemy
 ENEMYSPEED = 2
-ENEMYSIZE = 50
+ENEMYSIZE = 75
 ENEMYNUMBER = 60
 enemy_counter = 0
 enemies = []
+enemy_image = pygame.image.load('enemy1.png')
+enemy_image = pygame.transform.scale(enemy_image, (ENEMYSIZE, ENEMYSIZE))
 
 def terminate():
 	pygame.quit()
@@ -168,7 +170,7 @@ while True:
 
 	# Draw the enemies
 	for enemy in enemies:
-		pygame.draw.rect(window_surface, RED, enemy)
+		window_surface.blit(enemy_image, enemy)
 
 	# Draw the bullets
 	for bullet in bullets:
