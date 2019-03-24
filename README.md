@@ -8,3 +8,6 @@ If it runs slow/stuttery on macOS try [this](https://stackoverflow.com/questions
 ## Based on
 * python3
 * pygame
+
+## You like mushroom?
+Well, guess what, this game wasn't made for you. However, you can change the `enemy1.png` to whatever you don't like.
