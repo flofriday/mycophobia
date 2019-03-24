@@ -31,6 +31,11 @@ PLAYERSPEED = 10
 PLAYERWIDTH = 25
 PLAYERHEIGHT = 50
 player = pygame.Rect(400, WORLDBOTTOM - PLAYERHEIGHT, PLAYERWIDTH, PLAYERHEIGHT) # TODO: replace 400 here with the actuall value
+player_image1 = pygame.image.load('player1.png')
+player_image1 = pygame.transform.scale(player_image1, (PLAYERWIDTH, PLAYERHEIGHT))
+player_image2 = pygame.image.load('player2.png')
+player_image2 = pygame.transform.scale(player_image2, (PLAYERWIDTH, PLAYERHEIGHT))
+player_movement_counter = 0
 
 # Set up the bullets
 BULLETSPEED = 20
@@ -142,14 +147,19 @@ while True:
 
 	# Move the player
 	keys = pygame.key.get_pressed()
-	if keys[K_LEFT]: 
+	if keys[K_LEFT] and not keys[K_RIGHT]: 
 		player.left -= PLAYERSPEED
 		if player.left < 0:
 			player.left = 0
-	if keys[K_RIGHT]:
+		player_movement_counter += 1
+	elif keys[K_RIGHT] and not keys[K_LEFT]:
 		player.right += PLAYERSPEED
 		if player.right > WINDOWWIDTH:
 			player.right = WINDOWWIDTH
+		player_movement_counter += 1
+	else:
+		player_movement_counter = 0
+
 
 	# Check for the quit event
 	for event in pygame.event.get():
@@ -176,8 +186,19 @@ while True:
 	for bullet in bullets:
 		window_surface.blit(bullet_image, bullet)
 
-	# Draw the player
-	pygame.draw.rect(window_surface, BLUE, player)
+	# Draw the player (and switch the image every 10 frames)
+	player_image = player_image1
+	if player_movement_counter > 20:
+		player_movement_counter = 0
+
+	if player_movement_counter == 0:
+		player_image = player_image1
+	elif player_movement_counter < 10:
+		player_image = player_image2
+	else:
+		player_image = player_image1
+
+	window_surface.blit(player_image, player)
 
 	# Draw the score
 	text_offset = 10
